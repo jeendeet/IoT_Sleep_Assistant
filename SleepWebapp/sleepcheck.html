@@ -1,0 +1,321 @@
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+    <style>
+      .containermain{
+        width: 350;height: 100%;
+        padding:30px 20px; margin: auto;
+        color: #ffff; 
+        background: rgba(22,73,101,0.2665441176470589);
+        border-radius: 10px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media all and (max-width: 320px) {
+       .containermain {
+          width: 100%;
+       }
+      }
+      .background{
+        height:100%; width:100%;
+        text-align: center;
+        padding: 10px;
+        background: linear-gradient(229deg, rgba(25,164,241,1) 0%, rgba(160,57,223,1) 100%);
+      }
+      .buttonbonus{
+        height:28px; width:28px;
+        background-color: rgb(1, 119, 246);
+        border-radius: 2px;
+        border-color: rgb(255, 255, 255);
+      }
+      .buttoncontrolmode{
+        height:fit-content; width:fit-content;
+        background-color: rgba(1, 119, 246, 0);
+        padding: 0px 10px;
+        border-color: rgba(255, 255, 255, 0);
+      }
+      .buttonbot{
+        width: 305px;  
+        margin-top: 10px;
+        text-align: center;
+      }
+      .display{
+        width: 400px;
+        height: 95px;
+        padding-top: 5px;
+        text-align: center;
+        margin: auto;
+        border-radius: 5px;
+        background-color: rgba(48, 47, 47, 0.26);
+      }
+      .content{
+        width: 305px;
+        height: 60px;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 11px;
+        background-color: rgba(32, 32, 32, 0.26);
+        margin: 1px 3px;
+        text-align: left;
+
+      }
+      .contentmodal{
+        height: 60px;
+        padding-top: 15px;
+        text-align: right;
+        font-size: 10px;
+        font-weight: bold;
+        color: #030303;
+      }
+      .contentsleep{
+        text-align: left;
+        float: left;
+        padding-left: 50px;
+        width: 50%;
+      }
+      .sleep1{
+        width: 1px;
+        height: 22px;
+        border-style:solid;
+        border-width:0px 0px 10px 0px;
+        border-color: rgba(34, 186, 228, 0.718);
+        background-color: rgba(255, 255, 255, 0);
+        position: relative;
+        float: left;
+      }
+      .sleep2{
+        width: 1px;
+        height: 37px;
+        border-style:solid;
+        border-width:0px 0px 10px 0px;
+        border-color: rgba(34, 105, 228, 0.718);
+        background-color: rgba(255, 255, 255, 0);
+        position: relative;
+        float: left;
+      }
+      .sleep3{
+        width: 1px;
+        height: 52px;
+        border-style:solid;
+        border-width:0px 0px 10px 0px;
+        border-color: rgba(34, 60, 228, 0.718);
+        background-color: rgba(255, 255, 255, 0);
+        position: relative;
+        float: left;
+      }
+      .sleep4{
+        width: 1px;
+        height: 80px;
+        border-style:solid;
+        border-width:0px 0px 10px 0px;
+        border-color: rgba(118, 34, 228, 0.718);
+        background-color: rgba(255, 255, 255, 0);
+        position: relative;
+        float: left;
+      }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQ8bKLOCgR1CHBP60mO8kk2lj-QrexecI",
+            authDomain: "espnewest.firebaseapp.com",
+            databaseURL: "https://espnewest-default-rtdb.firebaseio.com",
+            projectId: "espnewest",
+            storageBucket: "espnewest.appspot.com",
+            messagingSenderId: "126316047195",
+            appId: "1:126316047195:web:5c6fd234624dbb4b7f887e",
+            measurementId: "G-71GKNNPDK0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const data = getDatabase();
+        function readTextFile(name,score,index,isStartup)
+        {
+            var pathfile = "./" + name + ".csv";
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", pathfile, false);
+            rawFile.onreadystatechange = function ()
+            {
+                if(rawFile.readyState === 4)
+                {
+                    if(rawFile.status === 200 || rawFile.status == 0)
+                    {
+                        var allText = rawFile.responseText;
+                        document.getElementById("dateCheck").innerHTML = name;
+                        var val = document.getElementById("figue");
+                        val.innerHTML = "";
+                        var awakeCount  = 0;
+                        var remCount    = 0;
+                        var lightCount  = 0;
+                        var deepCount   = 0;
+                        for(let i = 0; i< allText.length; i=i+1)
+                        {
+                            var sta = "";
+                            if      (allText[i] == 1) {
+                                sta = "<div class=\"sleep1\"></div> ";
+                                awakeCount ++;
+                            }
+                            else if (allText[i] == 2) {
+                                sta = "<div class=\"sleep2\"></div> ";
+                                remCount++;
+                            }
+                            else if (allText[i] == 3) {
+                                sta = "<div class=\"sleep3\"></div> ";
+                                lightCount++;
+                            }
+                            else if (allText[i] == 4) {
+                                sta = "<div class=\"sleep4\"></div> ";
+                                deepCount++;
+                            }
+                            if((sta != "") || (isStartup == 0)){
+                                val.innerHTML = val.innerHTML + sta;
+                            }
+                        }
+                        var totalCount = awakeCount+remCount+lightCount+deepCount;
+                        if((isStartup == 0)){
+                            document.getElementById("modalduring").innerHTML ="Sleep during: " + totalCount*12/10 + "min";
+                            document.getElementById("modalscore").innerHTML ="Sleep score: " + score;
+                            document.getElementById("awake").innerHTML  = "AWAKE: " + awakeCount*12/10 + "min";
+                            document.getElementById("rem").innerHTML    = "REM: " + remCount*12/10 + "min";
+                            document.getElementById("light").innerHTML  = "LIGHT: "+ awakeCount*12/10 + "min";
+                            document.getElementById("deep").innerHTML   = "DEEP: "+ deepCount*12/10 + "min";
+                        }
+                        else{
+                            document.getElementById("historyDuring" + index).innerHTML ="Sleep during: " + Math.round(totalCount/5)/10 + " hrs";
+                        }
+                    }
+                }
+            }
+            rawFile.send(null);
+        }
+        window.directPage = function directPage(page){
+            if(page ==0) {
+                window.location="./index.html";
+            }
+        }
+        window.viewHistory = function viewHistory(index){
+            var path1 = "Sleep/history/" + index;
+            get(ref(data,path1)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    var name = snapshot.val();
+                }
+                var path2 = "Sleep/historyscore/" + index;
+                get(ref(data,path2)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        var score = snapshot.val();
+                    }
+                    readTextFile(name, score,0,0);
+                })
+            })
+        }
+        window.startup = function startup(){
+            for(let index = 1; index<8; index++){
+                var path1 = "Sleep/history/" + index;
+                get(ref(data,path1)).then((snapshot) => {
+                    var name = snapshot.val();
+                    var path2 = "Sleep/historyscore/" + index;
+                    get(ref(data,path2)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            var score = snapshot.val();
+                        }
+                        readTextFile(name, score,index,1);
+                        document.getElementById("histoyDay"+index).innerHTML = name;
+                        document.getElementById("historyScore"+index).innerHTML ="Sleep score: "+score;
+                    })
+                })
+            }
+        }
+        startup();
+    </script>
+    <div class="background">
+    <div class='containermain'>
+        <div class="row" style="text-align: center">
+            <div class="col-sm-4" style="width: 35%;"> 
+                <img width='70px' src='https://static2.yan.vn/YanNews/2167221/202102/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg' class="rounded">
+            </div>
+            <div class="col-sm-8" style="text-align: left; width: 65%;"><h2>Dat Vuong</h2><h4>Sleep assistant</h4></div>
+        </div>
+        <h1> Sleep History </h1>
+        <button type="button" class="btn btn-primary buttonbot" onclick="directPage(0)"> Main page</button>
+
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(1)">
+            <h6 id="histoyDay1">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring1">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore1">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(2)">
+            <h6 id="histoyDay2">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring2">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore2">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(3)">
+            <h6 id="histoyDay3">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring3">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore3">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(4)">
+            <h6 id="histoyDay4">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring4">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore4">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(5)">
+            <h6 id="histoyDay5">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring5">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore5">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(6)">
+            <h6 id="histoyDay6">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring6">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore6">Sleep score : 97</h7></div>
+        </button>
+        <button type="button" class="btn btn-primary content" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="viewHistory(7)">
+            <h6 id="histoyDay7">28 Jul 2022 </h6>
+            <div class="col-sm-6" style="width: 50%; float: left;"><h7 id="historyDuring7">Sleep during : 6 hrs </h7></div>
+            <div class="col-sm-6" style="width: 45%; float: left;"><h7 id="historyScore7">Sleep score : 97</h7></div>
+        </button>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content" style="color: #01070a;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sleep Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="overallInfo" style="height: 70px; text-align: center; font-weight: bold; font-size: 14px;">
+                        <h4 id ="dateCheck">DATE</h4>
+                        <div class="col-sm-6 contentsleep"><h7 id="modalduring">Sleep during : 6 hrs </h7></div>
+                        <div class="col-sm-6 contentsleep"><h7 id="modalscore">Sleep score : 97</h7></div>
+                    </div>
+                    <div style="font-size: 12px; font-weight: bold;">    
+                        <div class="col-sm-6 contentsleep"><h7 id="awake">AWAKE: 200 min </h7></div>
+                        <div class="col-sm-6 contentsleep"><h7 id="rem">REM : 200 min </h7></div>
+                        <div class="col-sm-6 contentsleep"><h7 id="light">LIGHT : 200 min </h7></div>
+                        <div class="col-sm-6 contentsleep"><h7 id="deep">DEEP : 200 min </h7></div>
+                    </div>
+                    <div class="col-sm-6" style="width: 10%; float: left;">
+                        <div class="contentmodal">AWAKE <br> REM <br> LIGHT <br><br> DEEP</div>
+                    </div>
+                    <div class="col-sm-6" style="width: 90%; float: left;"><div class="display" id="figue"> data</div></div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>

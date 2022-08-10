@@ -1,0 +1,182 @@
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+    <style>
+      .containermain{
+        width: 350;height: 100%;
+        padding:30px 20px; margin: auto;
+        color: #ffff; 
+        background: rgba(22,73,101,0.2665441176470589);
+        border-radius: 10px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media all and (max-width: 320px) {
+       .containermain {
+          width: 100%;
+       }
+      }
+      .background{
+        height:100%; width:100%;
+        text-align: center;
+        padding: 10px;
+        background: linear-gradient(229deg, rgba(25,164,241,1) 0%, rgba(160,57,223,1) 100%);
+      }
+      .buttonbonus{
+        height:28px; width:28px;
+        background-color: rgb(1, 119, 246);
+        border-radius: 2px;
+        border-color: rgb(255, 255, 255);
+      }
+      .buttoncontrolmode{
+        height:fit-content; width:fit-content;
+        background-color: rgba(1, 119, 246, 0);
+        padding: 0px 10px;
+        border-color: rgba(255, 255, 255, 0);
+      }
+      .buttonbot{
+        width: 305px;  
+        margin-top: 10px;
+        text-align: center;
+      }
+      .form{
+        position: relative;
+        float: left;
+        margin-left: 6px;
+        width: 95px;
+        height: 40px;
+        background-color: rgba(32, 32, 32, 0.26);
+        color: aliceblue;
+      }
+      .time{
+        margin-left: 10px; 
+        width: 45px; 
+        text-align: center;
+        position: relative;
+        float: left;
+      }
+      .buttoncontrol{
+        width: 95px;
+        margin-left: 4px; 
+      }
+      .display{
+        width: 200px;
+        height: 200px;
+        padding-top: 70px;
+        text-align: center;
+        margin: auto;
+        border-radius: 10px;
+        background-color: rgba(32, 32, 32, 0.26);
+      }
+    </style>
+    </head>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+    
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyBQ8bKLOCgR1CHBP60mO8kk2lj-QrexecI",
+                authDomain: "espnewest.firebaseapp.com",
+                databaseURL: "https://espnewest-default-rtdb.firebaseio.com",
+                projectId: "espnewest",
+                storageBucket: "espnewest.appspot.com",
+                messagingSenderId: "126316047195",
+                appId: "1:126316047195:web:5c6fd234624dbb4b7f887e",
+                measurementId: "G-71GKNNPDK0"
+            };
+    
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+            const data = getDatabase();
+            window.directPage = function directPage(page){
+                if(page ==0) {
+                    window.location="./index.html";
+                }
+            }
+            window.setControl = function setControl(){
+                var on = document.getElementById("On").value;
+                var off = document.getElementById("Off").value;
+                get(ref(data, 'Sleep/ircontrol/on')).then((snapshot) => {
+                    set(ref(data, 'Sleep/ircontrol/on'), on);
+                })
+                get(ref(data, 'Sleep/ircontrol/off')).then((snapshot) => {
+                    set(ref(data, 'Sleep/ircontrol/off'), off);
+                })
+
+            }
+            window.Control = function Control(index){
+                var display = document.getElementById("Controldisplay");
+                if(index==0){
+                    display.innerHTML = "ON";
+                    get(ref(data, 'Sleep/ircontrol/on')).then((snapshot) => {
+                        var sta = snapshot.val();
+                        get(ref(data, 'Sleep/ircontrol/ordernow')).then((snapshot) => {
+                            set(ref(data, 'Sleep/ircontrol/ordernow'), 1);
+                        })
+                    })  
+                }
+                else if (index==1){
+                    display.innerHTML = "OFF";
+                    get(ref(data, 'Sleep/ircontrol/off')).then((snapshot) => {
+                        var sta = snapshot.val();
+                        get(ref(data, 'Sleep/ircontrol/ordernow')).then((snapshot) => {
+                            set(ref(data, 'Sleep/ircontrol/ordernow'), 0);
+                        })
+                    })  
+                }
+                else if (index==2){
+                    display.innerHTML = "NONE";
+                    get(ref(data, 'Sleep/ircontrol/ordernow')).then((snapshot) => {
+                            set(ref(data, 'Sleep/ircontrol/ordernow'), 2);
+                    })
+                }
+            }
+            onValue(ref(data, 'Sleep/ircontrol/ordernow'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    if(sta ==2)
+                    {
+                        var val = document.getElementById("Controldisplay");
+                        val.innerHTML = "NONE";
+                    }
+                } else {
+                    console.log("No data available");
+                }
+            });
+        </script>
+        <div class="background">
+        <div class='containermain'>
+      
+            <div class="row" style="text-align: center">
+                <div class="col-sm-4" style="width: 35%;"> 
+                    <img width='70px' src='https://static2.yan.vn/YanNews/2167221/202102/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg' class="rounded">
+                </div>
+                <div class="col-sm-8" style="text-align: left; width: 65%;"><h2>Dat Vuong</h2><h4>Sleep assistant</h4></div>
+            </div>
+            <h1> Control Fan </h1>
+            <div class="display">
+                <h1 id="Controldisplay">NONE</h1>
+            </div>
+            <div style="margin-top: 20px;">
+                <button type="button" class="btn btn-primary buttoncontrol" onclick="Control(0)">Turn On</button>
+                <button type="button" class="btn btn-primary buttoncontrol" onclick="Control(1)">Turn Off</button>
+                <button type="button" class="btn btn-primary buttoncontrol" onclick="Control(2)">End</button>
+            </div>
+            <div style="margin-top: 20px;">
+                <input type="number" class="form-control form"  id="On" placeholder="Turn on">
+                <input type="number" class="form-control form"  id="Off" placeholder="Turn off">
+                <button type="button" class="btn btn-primary form" onclick="setControl()">Reset</button>
+            </div>
+            <button type="button" class="btn btn-primary buttonbot" onclick="directPage(0)"> Main page</button>
+        </div>
+    </div>
+    
+    </body>

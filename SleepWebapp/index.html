@@ -1,0 +1,335 @@
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
+    <style>
+      .containermain{
+        width: 350;height: 100%;
+        padding:30px 20px; margin: auto;
+        color: #ffff; 
+        background: rgba(22,73,101,0.2665441176470589);
+        border-radius: 10px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media all and (max-width: 320px) {
+       .containermain {
+          width: 100%;
+       }
+      }
+      .background{
+        height:100%; width:100%;
+        text-align: center;
+        padding: 10px;
+        background: linear-gradient(229deg, rgba(25,164,241,1) 0%, rgba(160,57,223,1) 100%);
+      }
+      .status{
+          width: 140px;
+          height: 40px;
+          background-color: rgba(22,73,101,0.3337710084033614);
+          border-radius: 2px;
+          padding: 10px 7px;
+          text-align: left;
+          font-size: 20 px;
+      }
+      .buttonbonus{
+        height:28px; width:28px;
+        background-color: rgb(1, 119, 246);
+        border-radius: 2px;
+        border-color: rgb(255, 255, 255);
+      }
+      .buttoncontrolmode{
+        height:fit-content; width:fit-content;
+        background-color: rgba(1, 119, 246, 0);
+        padding: 0px 10px;
+        border-color: rgba(255, 255, 255, 0);
+      }
+      .buttoncontrol{
+        height:90px; 
+        width:135px;
+        margin: 5px 2px;
+        background-color: rgba(22, 73, 101, 0.181);
+        border-width: 0px;
+        padding: 0px;
+      }
+      .sleep{
+        height:110px; 
+        width:280px;
+        background-color: rgb(1, 119, 246);
+        border-color: rgb(235, 239, 241);
+        border-width: 1px;
+        margin:     auto;
+        padding:    10px 10px;
+        border-radius: 5px;
+      }
+      .buttonbot{
+        width: 280px;  
+        margin: 3px;
+        text-align: center;
+      }
+    </style>
+    </head>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+    
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyBQ8bKLOCgR1CHBP60mO8kk2lj-QrexecI",
+                authDomain: "espnewest.firebaseapp.com",
+                databaseURL: "https://espnewest-default-rtdb.firebaseio.com",
+                projectId: "espnewest",
+                storageBucket: "espnewest.appspot.com",
+                messagingSenderId: "126316047195",
+                appId: "1:126316047195:web:5c6fd234624dbb4b7f887e",
+                measurementId: "G-71GKNNPDK0"
+            };
+    
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+            const data = getDatabase();
+            function readSleep()
+            {
+                var name ="";
+                get(ref(data,"Sleep/history/1")).then((snapshot) => {
+                    name = snapshot.val();
+                    get(ref(data,"Sleep/historyscore/1")).then((snapshot) => {
+                        var score = snapshot.val();
+                        document.getElementById("SleepScore").innerHTML = score;
+                        var pathfile = "http://127.0.0.1:5500/" + name + ".csv";
+                        var rawFile = new XMLHttpRequest();
+                        rawFile.open("GET", pathfile, false);
+                        rawFile.onreadystatechange = function ()
+                        {
+                            if(rawFile.readyState === 4)
+                            {
+                                if(rawFile.status === 200 || rawFile.status == 0)
+                                {
+                                    var allText = rawFile.responseText;
+                                    var awakeCount  = 0;
+                                    var remCount    = 0;
+                                    var lightCount  = 0;
+                                    var deepCount   = 0;
+                                    for(let i = 0; i< allText.length; i=i+1)
+                                    {
+                                        if      (allText[i] == 1) {awakeCount ++;}
+                                        else if (allText[i] == 2) {remCount++;}
+                                        else if (allText[i] == 3) {lightCount++;}
+                                        else if (allText[i] == 4) {deepCount++;}
+                                    }
+                                    var totalCount = awakeCount+remCount+lightCount+deepCount;
+                                    document.getElementById("SleepDuring").innerHTML =Math.round(totalCount/5)/10 + " hrs";
+                                }
+                            }
+                        }
+                        rawFile.send(null);
+                    })
+                })
+            }
+            function readHealth()
+            {
+                var pathfile =  "http://127.0.0.1:5500/health.txt";
+                var rawFile = new XMLHttpRequest();
+                rawFile.open("GET", pathfile, false);
+                rawFile.onreadystatechange = function ()
+                {
+                    if(rawFile.readyState === 4)
+                    {
+                        if(rawFile.status === 200 || rawFile.status == 0)
+                        {
+                            var allText = rawFile.responseText;
+                            // window.alert(allText);
+                            let arr = ["","",""];
+                            var j=0;
+                            for(let i = 0; i<allText.length; i++){
+                                if(allText[i]!= ','){
+                                    arr[j] =  arr[j] + allText[i];
+                                }
+                                else j=j+1;
+                            }
+                            document.getElementById("HrID").innerHTML = arr[0];
+                            document.getElementById("MovementID").innerHTML = arr[2];
+                        }
+                    }
+                }
+                rawFile.send(null);
+                                        
+            }
+            window.LEDsubmitClick = function LEDsubmitClick(type){
+                var mode = 0;
+                get(ref(data, 'Sleep/controlmode')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    mode = snapshot.val();
+                }
+                if(mode == 1){
+                    var path ="";
+                    if(type == 0) {
+                        path = "Sleep/bright/blue";
+                    }
+                    else{
+                        path = "Sleep/bright/yellow";
+                    }
+                    get(ref(data, path)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        var value = snapshot.val() + 10;
+                        if(value > 100) {value = 0};
+                        set(ref(data, path), value);
+                    }
+                    })
+                }
+                })
+            }
+            window.CMsubmitClick = function CMsubmitClick(mode){
+                set(ref(data, 'Sleep/controlmode'), mode);
+            }
+            window.directPage = function directPage(page){
+                get(ref(data, 'Sleep/controlmode')).then((snapshot) => {
+                    var mode = snapshot.val();
+                    if(mode == 1){
+                        if(page == 1){
+                            window.location="./fancontrol.html";
+                        }
+                    }
+                })
+                if(page ==2) {
+                    window.location="./alarm.html";
+                }
+                if(page ==3) {
+                    window.location="./sleepcheck.html";
+                }
+            }
+            onValue(ref(data, 'Sleep/health/heartrate'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("HrID");
+                    val.innerHTML = sta;
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/health/movement'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("MovementID");
+                    val.innerHTML = sta;
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/bright/blue'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("BlueID");
+                    val.innerHTML = sta;
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/bright/yellow'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("YellowID");
+                    val.innerHTML = sta;
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/environment/temperature'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("TemperatureID");
+                    val.innerHTML = sta + " *C";
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/environment/humid'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("HumidID");
+                    val.innerHTML = sta + " %";
+                } else {
+                    console.log("No data available");
+                }
+            });
+            onValue(ref(data, 'Sleep/controlmode'), (snapshot) => {
+                if (snapshot.exists()) {
+                    var sta = snapshot.val();
+                    var val = document.getElementById("ControlID");
+                    if(sta == 0) val.innerHTML = "Auto";
+                    if(sta == 1) val.innerHTML = "Handle";
+                    if(sta == 2) val.innerHTML = "Test";
+                } else {
+                    console.log("No data available");
+                }
+            });
+            readSleep();
+            setInterval(readHealth, 4000);
+        </script>
+        <div class="background">
+        <div class='containermain'>
+      
+            <div class="row" style="text-align: center">
+                <div class="col-sm-4" style="width: 35%;"> 
+                    <img width='70px' src='https://static2.yan.vn/YanNews/2167221/202102/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg' class="rounded">
+                </div>
+                <div class="col-sm-8" style="text-align: left; width: 65%;"><h2>Dat Vuong</h2><h4>Sleep assistant</h4></div>
+            </div>
+            
+            <div class="row" style = "margin: 0px 0px; text-align:center">
+                <div class="col-sm-6" style="width: 47%;"> <h1 id="HrID">%STA%</h1><h7>Heart rate</h7></div>
+                <div class="col-sm-6" style="width: 47%;"> <h1 id="MovementID">%STA%</h1><h7>Movement</h7></div>
+            </div>
+            <div class="sleep" onclick="directPage(3)"> 
+                <h5>Last Sleep Record </h5>
+                <div class="row" style = "margin: 0px 0px; text-align:left">
+                    <div class="col-sm-6" style="width: 55%;"><h7>Sleep during <br> Sleep score </h7></div>
+                    <div class="col-sm-6" style="width: 30%;"><h7 id="SleepDuring">6 hrs</h7> <h7 id="SleepScore"> 97</h7></div>
+                </div>
+            </div>
+             <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary buttoncontrol" onclick="LEDsubmitClick(0)">
+                    <p><h3 id="BlueID">%STA%</h3><h8>Blue Light</h8></p>
+            </button>
+            <button type="button" class="btn btn-primary buttoncontrol" onclick="LEDsubmitClick(1)">
+                    <p><h3 id="YellowID">%STA%</h3><h8>Yellow Light</h8></p>
+            </button>
+            <button type="button" class="btn btn-primary buttoncontrol" data-bs-toggle="modal" data-bs-target="#TempModal">
+                    <p><h3 id="TemperatureID">%STA%</h3><h8>Temperature</h8></p>
+            </button>
+            <button type="button" class="btn btn-primary buttoncontrol" data-bs-toggle="modal" data-bs-target="#Modal">
+                    <p><h3 id="HumidID">%STA%</h3><h8>Humid</h8></p>
+            </button>
+
+            <div class="btn-group" role="group" aria-label="Button group with nested dropdown" style="margin: 5px 0px;">
+                <div class="btn-group" role="group">
+                  <button   id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" 
+                            style="width:140px; height: 40px;">
+                    <h9>Controlmode</h9>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    <li><button type="button" class="buttoncontrolmode" onclick="CMsubmitClick(0)">
+                            Auto
+                        </button></li>
+                    <li><button type="button" class="buttoncontrolmode" onclick="CMsubmitClick(1)">
+                            Handle
+                        </button></li>
+                    <li><button type="button" class="buttoncontrolmode" onclick="CMsubmitClick(2)">
+                            Test
+                        </button></li>
+                  </ul>
+                </div>
+                <div class="status" id="ControlID">Test</div>
+            </div>
+            <button type="button" class="btn btn-primary buttonbot" onclick="directPage(1)"> FAN CONTROL </button>
+            <button type="button" class="btn btn-primary buttonbot" onclick="directPage(2)"> ALARM</button>
+        </div>
+    </div>
+    
+    </body>
